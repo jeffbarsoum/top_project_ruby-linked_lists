@@ -55,6 +55,14 @@ class LinkedList
     old_tail
   end
 
+  # removes the first element from the list
+  def shift
+    old_head = self.head
+    self.head = at(1)
+    old_head.next_node = nil
+    old_head
+  end
+
   # returns true if the passed in value is in the list and otherwise returns false.
   def contains?(value)
     return true if find(value)
@@ -66,6 +74,7 @@ class LinkedList
     self.size.times do |i|
       return i if at(i).value == value
     end
+    return false
   end
 
   # represent your LinkedList objects as strings,
@@ -94,17 +103,13 @@ class LinkedList
 
   # removes the node at the given index
   def remove_at(index)
-    if index == 0
-      old_head = self.head
-      self.head = at(1)
-      old_head.next_node = nil
-      old.head.value
-    else
-      removed = at(index)
-      at(index - 1).next_node = at(index + 1)
-      removed.next_node = nil
-      removed.value
-    end
+    return false unless at(index)
+    prior_obj = at(index - 1)
+    next_obj = at(index + 1)
+    prior_obj.next_node = next_obj if prior_obj && next_obj
+    return shift unless prior_obj
+    return pop unless next_obj
+    at(index)
   end
 
 end
