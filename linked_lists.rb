@@ -1,67 +1,70 @@
 class LinkedList
   # setters and getters for first and last node in the list
-  attr_accessor :head, :tail
+  attr_accessor :head
 
   def initialize value
     prepend(value)
   end
 
+  def tail
+    next_pointer = self.head
+    while next_pointer do
+      return next_pointer unless next_pointer.next_node
+      next_pointer = next_pointer.next_node
+    end
+    next_pointer
+  end
+
   # adds a new node containing value to the end of the list
   def append(value)
-    new_node = self.tail = Node.new(value)
-    self.tail.next_node = new_node
-    self.tail = new_node
+    new_tail = Node.new(value)
+    old_tail = self.tail
+    old_tail.next_node = new_tail
   end
 
   # adds a new node containing value to the start of the list
   def prepend(value)
-    self.head = Node.new(value, self.head)
+    new_node = Node.new(value, self.head)
+    self.head = new_node
   end
 
   # returns the total number of nodes in the list
   def size
-    cnt = self.head ? 1: 0
+    cnt = 0
     next_pointer = self.head
     while next_pointer do
-      if next_pointer.next_node
-        next_pointer = next_pointer.next_node
-        cnt += 1
-      end
+      cnt += 1
+      next_pointer = next_pointer.next_node
     end
     cnt
   end
 
   # returns the node at the given index
   def at(index)
-    cnt = self.head ? 1 : 0
-    next_pointer = self.head
-    return self.head if index == 0
-    while cnt < index do
-      cnt += 1
-      next_pointer = next_pointer.next_node
+    pointer = self.head
+    index.times do |i|
+      pointer = pointer.next_node
     end
+    pointer
   end
 
   # removes the last element from the list
   def pop
-    result = at(size).value
-    at(size - 1).next_node = nil
-    result
+    old_tail = self.tail
+    at(size - 2).next_node = nil
+    old_tail
   end
 
   # returns true if the passed in value is in the list and otherwise returns false.
   def contains?(value)
-    next_pointer = self.head
-    until is_contains do
-      return true if next_pointer.value == value
-      next_pointer = next_pointer.next_node
-    end
+    return true if find(value)
+    false
   end
 
   # returns the index of the node containing value, or nil if not found.
   def find(value)
     self.size.times do |i|
-      return at(i) if at(i).value == value
+      return i if at(i).value == value
     end
   end
 
@@ -72,8 +75,11 @@ class LinkedList
   def to_s
     str = ""
     self.size.times do |i|
-      str += "( #{at(i).value} ) -> "
+      str += "( #{at(i)} )"
+      str += " -> "
     end
+    str += "nil"
+    str
   end
 
   ####################
@@ -82,12 +88,23 @@ class LinkedList
 
   # inserts a new node with the provided value at the given index.
   def insert_at(value, index)
+    return prepend(value) if index == 0
     at(index - 1).next_node = Node.new(value, at(index))
   end
 
   # removes the node at the given index
   def remove_at(index)
-    at(index - 1).next_node = at(index + 1)
+    if index == 0
+      old_head = self.head
+      self.head = at(1)
+      old_head.next_node = nil
+      old.head.value
+    else
+      removed = at(index)
+      at(index - 1).next_node = at(index + 1)
+      removed.next_node = nil
+      removed.value
+    end
   end
 
 end
@@ -101,6 +118,10 @@ class Node
     self.next_node = nxt_nd
   end
 
+  def to_s
+    value.to_s
+  end
+
 end
 
 ##################
@@ -108,12 +129,18 @@ end
 ##################
 
 list = LinkedList.new("apple")
+puts list
+puts "at(0): #{list.at(0).value}"
+# puts "at(1): #{at(1).value}"
 list.append("pear")
+puts list
 list.prepend("algae")
+puts list
 list.insert_at("orange", 3)
+puts list
 list.append("zebra")
 puts list
-list.remove_at(list.size)
+list.remove_at(list.size - 1)
 puts list
 puts "\n\nCounts:"
 puts "size: #{list.size}"
@@ -121,4 +148,3 @@ puts "find pear (true): #{list.find("pear")}"
 puts "find zebra (false): #{list.find("zebra")}"
 puts "contains pear (true): #{list.contains?("pear")}"
 puts "contains zebra (false): #{list.contains?("zebra")}"
-
