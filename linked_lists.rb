@@ -102,3 +102,23 @@ class Node
   end
 
 end
+
+##################
+# Testing
+##################
+
+list = LinkedList.new("apple")
+list.append("pear")
+list.prepend("algae")
+list.insert_at("orange", 3)
+list.append("zebra")
+puts list
+list.remove_at(list.size)
+puts list
+puts "\n\nCounts:"
+puts "size: #{list.size}"
+puts "find pear (true): #{list.find("pear")}"
+puts "find zebra (false): #{list.find("zebra")}"
+puts "contains pear (true): #{list.contains?("pear")}"
+puts "contains zebra (false): #{list.contains?("zebra")}"
+
